@@ -1,0 +1,1 @@
+# Templates package for prompt markdown files
