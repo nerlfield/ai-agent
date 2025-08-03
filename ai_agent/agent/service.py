@@ -191,10 +191,25 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 			actions.append(action.prompt_description())
 		
 		action_descriptions = '\n'.join(actions)
-		print(f"DEBUG: Available actions ({len(actions)} total):")
-		print(f"DEBUG: {action_descriptions}")
+		self._log_debug(f"📋 Available actions: {len(actions)} total")
 		
 		return action_descriptions
+	
+	def _log_debug(self, message: str, level: str = "INFO") -> None:
+		"""Clean debug logging with emojis"""
+		# Check if message already starts with an emoji, if so don't add another
+		if len(message) > 0 and ord(message[0]) > 127:  # Unicode emoji check
+			print(message)
+		else:
+			emoji_map = {
+				"INFO": "ℹ️",
+				"SUCCESS": "✅", 
+				"ERROR": "❌",
+				"WARNING": "⚠️",
+				"EXEC": "🔧"
+			}
+			emoji = emoji_map.get(level, "📝")
+			print(f"{emoji} {message}")
 	
 	async def run(self, max_steps: int = 50) -> AgentHistoryList:
 		"""Execute agent until completion or max steps reached"""
@@ -311,11 +326,10 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 		if not model_output_completion.completion:
 			raise ValueError('Model output is empty')
 		
-		# Debug logging
-		print(f"DEBUG: LLM returned completion type: {type(model_output_completion.completion)}")
-		print(f"DEBUG: LLM completion content: {model_output_completion.completion}")
-		self.logger.info(f"LLM returned completion type: {type(model_output_completion.completion)}")
-		self.logger.info(f"LLM completion content: {model_output_completion.completion}")
+		# Clean logging of LLM output
+		num_actions = len(model_output_completion.completion.action) if hasattr(model_output_completion.completion, 'action') else 0
+		is_done = getattr(model_output_completion.completion, 'is_done', False)
+		self._log_debug(f"🤖 LLM generated {num_actions} actions, done: {is_done}")
 		
 		self.state.last_model_output = model_output_completion.completion
 		
@@ -415,16 +429,11 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 	
 	async def _execute_actions(self) -> None:
 		"""Execute the actions from model output"""
-		print("DEBUG: _execute_actions() called")
 		if not self.state.last_model_output:
-			print("DEBUG: No last_model_output, returning")
 			return
 		
 		# Check if last_model_output has the expected structure
 		if not hasattr(self.state.last_model_output, 'action'):
-			print(f"DEBUG: Model output has no 'action' attribute. Type: {type(self.state.last_model_output)}")
-			print(f"DEBUG: Model output content: {self.state.last_model_output}")
-			print(f"DEBUG: Model output attributes: {dir(self.state.last_model_output)}")
 			self.logger.error(f"Model output has no 'action' attribute. Type: {type(self.state.last_model_output)}")
 			self.logger.error(f"Model output content: {self.state.last_model_output}")
 			return
@@ -438,22 +447,18 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 			action_dict = action.model_dump(exclude_unset=True)
 			if action_dict:  # Only include non-empty actions
 				valid_actions.append(action)
-			else:
-				print(f"DEBUG: Skipping empty ActionModel: {action}")
 		
 		if not valid_actions:
-			print("DEBUG: No valid actions found after filtering empty ActionModels")
+			self._log_debug("⚠️ No valid actions found")
 			return
 		
-		print(f"DEBUG: Found {len(valid_actions)} valid actions out of {len(self.state.last_model_output.action)} total")
+		self._log_debug(f"📝 Processing {len(valid_actions)} actions")
 		
 		if self.state.paused or self.state.stopped:
 			return
 		
 		# Execute actions
-		print(f"DEBUG: About to call multi_act with {len(valid_actions)} actions")
 		results = await self.multi_act(valid_actions)
-		print(f"DEBUG: multi_act returned {len(results)} results")
 		self.state.last_result = results
 		self.state.consecutive_failures = 0
 	
@@ -463,13 +468,17 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 			return [ActionResult(success=False, error='No controller available')]
 		
 		results = []
+		self._log_debug(f"🔧 Executing {len(actions)} actions")
 		
 		for i, action in enumerate(actions):
 			if self.state.stopped:
 				break
 			
-			print(f"DEBUG: Executing action {i+1}/{len(actions)}: {action}")
-			print(f"DEBUG: Action dump: {action.model_dump_json(exclude_unset=True)}")
+			# Clean action name extraction
+			action_data = action.model_dump(exclude_unset=True)
+			action_name = next(iter(action_data.keys()), 'unknown') if action_data else 'unknown'
+			
+			self._log_debug(f"🎯 Action {i+1}/{len(actions)}: {action_name}")
 			self.logger.info(f'🎯 Executing action {i+1}/{len(actions)}: {action.model_dump_json(exclude_unset=True)}')
 			
 			try:
@@ -478,22 +487,25 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 					await self._check_index_changes(action)
 				
 				# Execute action
-				print(f"DEBUG: About to call controller.act() with file_system={self.file_system}")
 				result = await self.controller.act(action, file_system=self.file_system)
-				print(f"DEBUG: Action result: {result}")
-				print(f"DEBUG: Action result success: {result.success}")
-				if hasattr(result, 'extracted_content'):
-					print(f"DEBUG: Action result content: {result.extracted_content}")
+				
+				if result.success:
+					self._log_debug(f"✅ {action_name}: {result.extracted_content or 'completed'}")
+				else:
+					self._log_debug(f"❌ {action_name}: {result.error or 'failed'}")
 				
 				results.append(result)
 				
 				# Check if we should stop
 				if result.is_done or (hasattr(result, 'stop_execution') and result.stop_execution):
-					print(f"DEBUG: Stopping execution - is_done: {result.is_done}")
+					self._log_debug("🏁 Task marked as complete")
+					# Also mark the model output as done to prevent repeat steps
+					if self.state.last_model_output:
+						self.state.last_model_output.is_done = True
 					break
 					
 			except Exception as e:
-				print(f"DEBUG: Action execution exception: {type(e).__name__}: {e}")
+				self._log_debug(f"❌ {action_name}: {type(e).__name__}: {e}")
 				error_msg = AgentError.format_error(e, action)
 				self.logger.error(f'Action failed: {error_msg}')
 				results.append(ActionResult(success=False, error=error_msg))
@@ -502,7 +514,8 @@ class GenericAgent(Generic[Context, State, AgentStructuredOutputT]):
 				if not self._should_continue_after_error(e):
 					break
 		
-		print(f"DEBUG: multi_act() returning {len(results)} results")
+		success_count = sum(1 for r in results if r.success)
+		self._log_debug(f"📊 Completed: {success_count}/{len(results)} actions successful")
 		return results
 	
 	async def _check_index_changes(self, action: ActionModel) -> None:

@@ -146,7 +146,7 @@ class AgentBrain(BaseModel):
 class AgentOutput(BaseModel):
 	"""The output of the agent model"""
 	model_config = ConfigDict(
-		extra='forbid',
+		extra='ignore',
 		arbitrary_types_allowed=True,
 	)
 	
