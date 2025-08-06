@@ -13,19 +13,6 @@ def create_llm(llm_type: LLMType, model: str, **kwargs) -> BaseChatModel:
 	elif llm_type == LLMType.OPENAI:
 		from ai_agent.llm.openai.chat import ChatOpenAI
 		return ChatOpenAI(model=model, **kwargs)
-	
-	elif llm_type == LLMType.GOOGLE:
-		from ai_agent.llm.google.chat import ChatGoogle
-		return ChatGoogle(model=model, **kwargs)
-	
-	elif llm_type == LLMType.GROQ:
-		from ai_agent.llm.groq.chat import ChatGroq
-		return ChatGroq(model=model, **kwargs)
-	
-	elif llm_type == LLMType.OLLAMA:
-		from ai_agent.llm.ollama.chat import ChatOllama
-		return ChatOllama(model=model, **kwargs)
-	
 	else:
 		raise ValueError(f"Unsupported LLM type: {llm_type}")
 
