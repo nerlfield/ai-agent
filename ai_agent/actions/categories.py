@@ -48,6 +48,9 @@ class ActionTag(str, Enum):
 	REVERSIBLE = 'reversible'
 	IDEMPOTENT = 'idempotent'
 	
+	SIDE_EFFECTS = 'side_effects'
+	REQUIRES_FILE_SYSTEM = 'requires_file_system'
+	
 	# Performance
 	FAST = 'fast'
 	SLOW = 'slow'

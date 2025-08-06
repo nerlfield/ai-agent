@@ -2,7 +2,7 @@
 name = "ai-agent"
 description = "General-purpose AI agent with MCP tool integration"
 version = "0.1.0"
-requires-python = ">=3.10,<4.0"
+requires-python = ">=3.11,<4.0"
 dependencies = [
     "pydantic>=2.11.5",
     "bubus>=1.4.7",
