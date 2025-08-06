@@ -15,8 +15,8 @@ from ai_agent.actions.file_actions import (
 	WriteFileAction,
 )
 from ai_agent.actions.web_actions import HttpGetAction, HttpRequestAction
-from ai_agent.controller.registry.service import Registry
 from ai_agent.filesystem import FileSystem
+from ai_agent.registry import Registry
 
 
 def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
@@ -27,7 +27,7 @@ def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
 		description='Read the contents of a file',
 		param_model=ReadFileAction().get_parameter_model(),
 	)
-	async def read_file(params, file_system: FileSystem):
+	async def read_file(params, file_system=None):
 		action = ReadFileAction()
 		from ai_agent.actions.base import ActionContext
 		context = ActionContext(data=file_system)
@@ -38,7 +38,7 @@ def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
 		description='Write content to a file',
 		param_model=WriteFileAction().get_parameter_model(),
 	)
-	async def write_file(params, file_system: FileSystem):
+	async def write_file(params, file_system=None):
 		action = WriteFileAction()
 		from ai_agent.actions.base import ActionContext
 		context = ActionContext(data=file_system)
@@ -49,7 +49,7 @@ def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
 		description='Delete a file',
 		param_model=DeleteFileAction().get_parameter_model(),
 	)
-	async def delete_file(params, file_system: FileSystem):
+	async def delete_file(params, file_system=None):
 		action = DeleteFileAction()
 		from ai_agent.actions.base import ActionContext
 		context = ActionContext(data=file_system)
@@ -60,7 +60,7 @@ def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
 		description='List files in the working directory',
 		param_model=ListFilesAction().get_parameter_model(),
 	)
-	async def list_files(params, file_system: FileSystem):
+	async def list_files(params, file_system=None):
 		action = ListFilesAction()
 		from ai_agent.actions.base import ActionContext
 		context = ActionContext(data=file_system)
@@ -71,7 +71,7 @@ def register_file_actions(registry: Registry, file_system: FileSystem) -> None:
 		description='Create a new directory',
 		param_model=CreateDirectoryAction().get_parameter_model(),
 	)
-	async def create_directory(params, file_system: FileSystem):
+	async def create_directory(params, file_system=None):
 		action = CreateDirectoryAction()
 		from ai_agent.actions.base import ActionContext
 		context = ActionContext(data=file_system)

@@ -22,7 +22,7 @@ from ai_agent.controller.service import Controller
 from ai_agent.filesystem import FileSystem
 from ai_agent.llm.factory import create_llm
 from ai_agent.llm.views import LLMType
-from ai_agent.registry.views import ActionResult
+from ai_agent.common.models import ActionResult
 
 
 # Custom action parameters
@@ -180,7 +180,7 @@ async def main():
 	register_custom_actions(controller)
 	
 	# Also register file actions for saving results
-	from ai_agent.actions.registry_helper import register_file_actions
+	from ai_agent.registry_helper import register_file_actions
 	register_file_actions(controller.registry, file_system)
 	
 	# Create execution context

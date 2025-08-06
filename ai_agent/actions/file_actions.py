@@ -8,7 +8,7 @@ from ai_agent.actions.base import ActionContext, ActionParameter, BaseAction
 from ai_agent.actions.categories import ActionCategory, ActionTag
 from ai_agent.actions.validation import NonEmptyStringField
 from ai_agent.filesystem import FileSystem
-from ai_agent.registry.views import ActionResult
+from ai_agent.common.models import ActionResult
 
 
 class ReadFileParams(ActionParameter):

@@ -20,7 +20,7 @@ from pydantic import Field
 from ai_agent.actions.base import ActionParameter, BaseAction, ActionContext
 from ai_agent.actions.categories import ActionCategory, ActionTag, CategoryManager
 from ai_agent.actions.documentation import ActionDocGenerator
-from ai_agent.actions.registry import ActionRegistry
+from ai_agent.registry import ActionRegistry
 from ai_agent.actions.results import EnhancedActionResult
 from ai_agent.actions.testing import (
 	ActionTestHarness,

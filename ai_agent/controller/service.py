@@ -5,7 +5,7 @@ from typing import Generic, TypeVar
 
 from pydantic import BaseModel
 
-from ai_agent.controller.registry.service import Registry
+from ai_agent.registry import Registry
 from ai_agent.common.models import ActionResult
 
 logger = logging.getLogger(__name__)
@@ -111,13 +111,9 @@ class Controller(Generic[Context]):
 			ActionResult from the executed action
 		"""
 		try:
-			print(f"DEBUG: Controller.act() called with action: {action}")
-			print(f"DEBUG: Controller.act() kwargs: {kwargs}")
 			result = await self.registry.execute_action(action, **kwargs)
-			print(f"DEBUG: Controller.act() registry returned: {result}")
 			return result
 		except Exception as e:
-			print(f"DEBUG: Controller.act() exception: {type(e).__name__}: {e}")
 			logger.error(f'Action execution failed: {e}')
 			return ActionResult(
 				success=False,

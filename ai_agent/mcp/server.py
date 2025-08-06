@@ -62,8 +62,7 @@ _configure_mcp_server_logging()
 # Import ai_agent modules
 from ai_agent.agent.context import SimpleExecutionContext
 from ai_agent.agent.service import GenericAgent, ExecutionContext, Controller
-from ai_agent.actions.registry import ActionRegistry
-from ai_agent.controller.registry.service import Registry
+from ai_agent.registry import ActionRegistry, Registry
 from ai_agent.llm.factory import create_llm
 from ai_agent.llm.types import LLMType
 from ai_agent.filesystem.file_system import FileSystem

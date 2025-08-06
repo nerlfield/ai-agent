@@ -12,11 +12,11 @@ import asyncio
 import logging
 from pathlib import Path
 
-from ai_agent.actions.registry_helper import register_all_actions
+from ai_agent.registry_helper import register_all_actions
 from ai_agent.agent.context import SimpleExecutionContext
 from ai_agent.agent.service import GenericAgent
 from ai_agent.agent.views import AgentSettings
-from ai_agent.controller.registry.service import Registry
+from ai_agent.registry.service import Registry
 from ai_agent.filesystem import FileSystem
 from ai_agent.llm.factory import create_llm
 from ai_agent.llm.views import LLMType
@@ -126,7 +126,7 @@ async def simple_example():
 	from ai_agent.agent.context import SimpleExecutionContext
 	from ai_agent.controller.service import Controller
 	from ai_agent.filesystem import FileSystem
-	from ai_agent.actions.registry_helper import register_all_actions
+	from ai_agent.registry_helper import register_all_actions
 	
 	# Quick setup
 	llm = create_llm(LLMType.ANTHROPIC, model='claude-3-5-sonnet-20241022')

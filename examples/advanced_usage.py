@@ -15,7 +15,7 @@ from typing import Any
 from bubus import EventBus
 from pydantic import BaseModel, Field
 
-from ai_agent.actions.registry_helper import register_all_actions
+from ai_agent.registry_helper import register_all_actions
 from ai_agent.agent.context import SimpleExecutionContext
 from ai_agent.agent.service import GenericAgent
 from ai_agent.agent.views import AgentSettings
@@ -23,7 +23,7 @@ from ai_agent.controller.service import Controller
 from ai_agent.filesystem import FileSystem
 from ai_agent.llm.factory import create_llm
 from ai_agent.llm.views import LLMType
-from ai_agent.registry.views import ActionResult
+from ai_agent.common.models import ActionResult
 
 
 # Structured output models

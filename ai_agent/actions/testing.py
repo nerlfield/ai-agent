@@ -7,7 +7,7 @@ from typing import Any, Type
 from pydantic import BaseModel, Field
 
 from ai_agent.actions.base import ActionContext, BaseAction
-from ai_agent.registry.views import ActionResult
+from ai_agent.common.models import ActionResult
 
 
 class MockActionContext(ActionContext):

@@ -1,12 +1,14 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Type
+from typing import Any, Type, TYPE_CHECKING
 
 from pydantic import BaseModel
 
 from ai_agent.actions.base import BaseAction
-from ai_agent.registry.views import RegisteredAction
+
+if TYPE_CHECKING:
+	from ai_agent.registry.models import RegisteredAction
 
 
 class ActionDocGenerator:

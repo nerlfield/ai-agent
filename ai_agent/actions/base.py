@@ -5,7 +5,7 @@ from typing import Any, Generic, Protocol, TypeVar, runtime_checkable
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from ai_agent.registry.views import ActionResult
+from ai_agent.common.models import ActionResult
 
 # Type variables for generic actions
 TParams = TypeVar('TParams', bound=BaseModel)

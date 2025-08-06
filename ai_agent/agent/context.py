@@ -5,11 +5,10 @@ from typing import Any, Generic, TypeVar
 from pydantic import BaseModel, Field
 
 from ai_agent.agent.service import ExecutionContext
-from ai_agent.controller.registry.service import Registry
+from ai_agent.registry import Registry, ActionModel, ActionResult
 from ai_agent.filesystem import FileSystem
 from ai_agent.llm.base import BaseChatModel
 from ai_agent.prompts.context import ContextProvider
-from ai_agent.registry.views import ActionModel, ActionResult
 
 
 T = TypeVar('T', bound=BaseModel)

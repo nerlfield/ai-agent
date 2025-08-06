@@ -183,19 +183,14 @@ class ChatAnthropic(BaseChatModel):
 				for content_block in response.content:
 					if hasattr(content_block, 'type') and content_block.type == 'tool_use':
 						try:
-							# Debug logging
-							print(f"DEBUG: Tool input received: {content_block.input}")
-							print(f"DEBUG: Tool input type: {type(content_block.input)}")
+							# Parse LLM response  
 							result = output_format.model_validate(content_block.input)
-							print(f"DEBUG: Parsed result: {result}")
 							return ChatInvokeCompletion(completion=result, usage=usage)
 						except Exception as e:
-							print(f"DEBUG: Parsing failed: {e}")
+							print(f"⏺ LLM response parsing failed: {type(e).__name__}: {e}")
 							if isinstance(content_block.input, str):
 								data = json.loads(content_block.input)
-								print(f"DEBUG: JSON parsed data: {data}")
-								result = output_format.model_validate(data)
-								print(f"DEBUG: Final result: {result}")
+								result = output_format.model_validate(data) 
 								return ChatInvokeCompletion(
 									completion=result,
 									usage=usage,

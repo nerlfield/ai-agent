@@ -7,11 +7,15 @@ from pathlib import Path
 from typing import TYPE_CHECKING, Any, Generic, Literal, TypeVar
 
 from pydantic import BaseModel, ConfigDict, Field, ValidationError, create_model, model_validator
-from uuid_extensions import uuid7str
+from uuid import uuid4
+
+def uuid7str() -> str:
+	"""Generate a UUID string"""
+	return str(uuid4())
 
 from ai_agent.common.models import ActionResult
 from ai_agent.llm.base import BaseChatModel
-from ai_agent.registry.views import ActionModel
+from ai_agent.registry import ActionModel
 from ai_agent.tokens.views import UsageSummary
 
 if TYPE_CHECKING:
