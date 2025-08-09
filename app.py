@@ -25,10 +25,11 @@ def render_reasoning(text: str) -> None:
     console.print(Panel.fit(Markdown(text), title="Reasoning", border_style="green"))
 
 async def main() -> None:
-    default_server = os.path.join(os.path.dirname(__file__), "src", "tools", "rules_server.py")
+    server_names = ["rules_server.py", "perplexity_server.py", "image_tool_server.py", "planner_server.py"]
+    server_paths = [os.path.join(os.path.dirname(__file__), "src", "tools", name) for name in server_names]
     
     agent = Agent()
-    await agent.initialize([default_server])
+    await agent.initialize(server_paths)
 
     console.print("[green]Agent (GPT-5 + MCP) started. Type 'exit' to quit.[/green]")
 
