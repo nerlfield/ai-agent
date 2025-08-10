@@ -7,6 +7,9 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.markdown import Markdown
 
+import dotenv
+dotenv.load_dotenv()
+
 from src.service import Agent
 
 console = Console()
