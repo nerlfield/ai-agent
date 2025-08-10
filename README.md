@@ -135,6 +135,13 @@ Current default rules:
 
 Agent rules are stored in `.agent_rules.json` in the project root and persist across sessions.
 
+## GPT-5 Materials
+
+[GPT-5 Prompting Guide](https://cookbook.openai.com/examples/gpt-5/gpt-5_prompting_guide)
+[GPT-5 Tools & Controls & Styles](https://cookbook.openai.com/examples/gpt-5/gpt-5_new_params_and_tools)
+[OpenAI Agents SDK](https://openai.github.io/openai-agents-python/)
+
+
 ## Development
 
 ### Project Structure
@@ -166,3 +173,26 @@ The agent architecture supports:
 - Custom tool implementations  
 - Configurable response formatting
 - Persistent state management
+
+### Target Agent Features (TODO):
+
+- Core Cognitive Abilities
+    + - on-demand strong reasoning engine – can handle multi-step logical deductions, causal reasoning, and counterfactual thinking.
+    + - Planning & Goal Management – Breaks down large objectives into smaller actionable steps and tracks progress.
+    - Chain-of-Thought Execution – Uses internal reasoning before responding, to avoid jumping to conclusions.
+    - Self-Correction – Re-evaluates its answers mid-conversation if new data contradicts previous assumptions.
+- Memory & Context Handling
+    - Long-Term Memory – Stores and recalls user preferences, past discussions.
+    + - Short-Term Context Window – Handles large, complex conversations without “forgetting” early parts.
+    - Retrieval-Augmented Memory – Pulls facts from external databases or embeddings when needed.
+- Tool & API Integration
+    + - Web Search Integration – Retrieves up-to-date facts instead of relying only on pretraining.
+    + - Code Execution Sandbox – Runs Python/JavaScript for calculations, simulations, and quick prototyping.
+    + - Document & Data Parsing – Reads PDFs, spreadsheets, JSON, etc., and extracts structured info.
+- Multi-Modal Capabilities
+    + - Image Understanding - Reads diagrams, charts, and screenshots.
+- Interaction & Adaptability
+    - Persona & Tone Control - Carefully follows predefined persona traits, knowledge, characteristics, preferences;
+- Autonomy & Learning
+    - Self-Learning from Feedback – Improves answers over time based on corrections or ratings.
+    - Proactive Suggestions – Offers relevant next steps without waiting for user prompts.
