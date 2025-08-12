@@ -71,7 +71,7 @@ class Agent:
             if tool_calls:
                 tool_calls_data = []
                 tool_outputs = []
-                
+
                 for call in tool_calls:
                     name = call.name
                     call_id = call.call_id
@@ -88,6 +88,31 @@ class Agent:
                         "tool_call_id": call_id,
                         "output": result_str
                     })
+
+                    # Check if the tool call was to create a plan
+                    if name == "create_plan" and result_str:
+                        try:
+                            plan_data = json.loads(result_str)
+                            if "plan" in plan_data and isinstance(plan_data["plan"], list):
+                                # Execute the plan
+                                plan_results = []
+                                for step in plan_data["plan"]:
+                                    if "tool" in step and "args" in step:
+                                        step_tool = step["tool"]
+                                        step_args = step["args"]
+                                        step_result = await self.mcp.call(step_tool, step_args)
+                                        plan_results.append({
+                                            "step": step,
+                                            "result": step_result
+                                        })
+
+                                # Combine plan results into a single output
+                                final_output = "Plan executed. Results:\n" + json.dumps(plan_results, indent=2)
+                                tool_outputs[-1]["output"] = final_output
+                        except json.JSONDecodeError:
+                            # Not a valid plan, proceed as normal
+                            pass
+
 
                 reasoning_text = "\n".join(reasoning_parts).strip() if reasoning_parts else None
                 yield AgentResponse(text=None, tool_calls=tool_calls_data, reasoning=reasoning_text)

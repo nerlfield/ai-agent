@@ -1,4 +1,4 @@
-import asyncio, sys
+import asyncio, sys, os
 from contextlib import AsyncExitStack
 from typing import Dict, Tuple, Any, List
 
@@ -26,7 +26,8 @@ class MCPManager:
             else:
                 raise ValueError(f"Unsupported server file: {path}")
 
-            params = StdioServerParameters(command=command, args=args, env=None)
+            # Ensure subprocesses inherit the current environment (including keys loaded via dotenv)
+            params = StdioServerParameters(command=command, args=args, env=os.environ.copy())
             stdio = await self._stack.enter_async_context(stdio_client(params))
             read, write = stdio
             session = await self._stack.enter_async_context(ClientSession(read, write))
