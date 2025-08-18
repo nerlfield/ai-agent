@@ -28,7 +28,7 @@ def render_reasoning(text: str) -> None:
     console.print(Panel.fit(Markdown(text), title="Reasoning", border_style="green"))
 
 async def main() -> None:
-    server_names = ["rules_server.py", "perplexity_server.py", "image_tool_server.py", "planner_server.py"]
+    server_names = ["rules_server.py", "perplexity_server.py", "image_tool_server.py"]
     server_paths = [os.path.join(os.path.dirname(__file__), "src", "tools", name) for name in server_names]
     
     agent = Agent()

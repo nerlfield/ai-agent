@@ -45,8 +45,9 @@ class Agent:
             model=MODEL,
             input=self.messages,
             tools=self.mcp.openai_tools_schema(),
-            text={"format": {"type": "text"}, "verbosity": "low"},
-            reasoning={"effort": "low", "summary": "auto"}
+            text={"format": {"type": "text"}, "verbosity": "medium"},
+            reasoning={"effort": "low", "summary": "auto"},
+            parallel_tool_calls=True,
         )
 
         while True:
@@ -85,34 +86,10 @@ class Agent:
                     tool_calls_data.append(ToolCall(name=name, arguments=arguments))
                     result_str = await self.mcp.call(name, arguments)
                     tool_outputs.append({
-                        "tool_call_id": call_id,
+                        "type": "function_call_output",
+                        "call_id": call_id,
                         "output": result_str
                     })
-
-                    # Check if the tool call was to create a plan
-                    if name == "create_plan" and result_str:
-                        try:
-                            plan_data = json.loads(result_str)
-                            if "plan" in plan_data and isinstance(plan_data["plan"], list):
-                                # Execute the plan
-                                plan_results = []
-                                for step in plan_data["plan"]:
-                                    if "tool" in step and "args" in step:
-                                        step_tool = step["tool"]
-                                        step_args = step["args"]
-                                        step_result = await self.mcp.call(step_tool, step_args)
-                                        plan_results.append({
-                                            "step": step,
-                                            "result": step_result
-                                        })
-
-                                # Combine plan results into a single output
-                                final_output = "Plan executed. Results:\n" + json.dumps(plan_results, indent=2)
-                                tool_outputs[-1]["output"] = final_output
-                        except json.JSONDecodeError:
-                            # Not a valid plan, proceed as normal
-                            pass
-
 
                 reasoning_text = "\n".join(reasoning_parts).strip() if reasoning_parts else None
                 yield AgentResponse(text=None, tool_calls=tool_calls_data, reasoning=reasoning_text)
@@ -120,12 +97,11 @@ class Agent:
                 resp = await self.client.responses.create(
                     model=MODEL,
                     previous_response_id=resp.id,
-                    input=[{
-                        "type": "function_call_output",
-                        "call_id": o["tool_call_id"],
-                        "output": o["output"],
-                    } for o in tool_outputs],
-                    reasoning={"effort": "low", "summary": "auto"}
+                    input=tool_outputs,
+                    tools=self.mcp.openai_tools_schema(),
+                    text={"format": {"type": "text"}, "verbosity": "medium"},
+                    reasoning={"effort": "low", "summary": "auto"},
+                    parallel_tool_calls=True,
                 )
                 continue
 
